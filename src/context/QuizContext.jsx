@@ -1,5 +1,5 @@
 import { createContext, useReducer } from "react";
-import questions from "../data/questions.json"
+import questions from "../data/questions"
 
 export const QuizContext = createContext();
 
@@ -35,7 +35,7 @@ function quizReducer(state, action){
                 questions: state.questions
             }        
         default:
-            return state;   
+             return state;   
     }
 }
 

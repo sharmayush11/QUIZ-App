@@ -1,9 +1,7 @@
-import React from 'react'
-
-function Timer() {
+export default function Timer({time}) {
   return (
-    <div className="alert alert-info text-center fw-bold">⏳ Time Left: 15s</div>
+    <div className="alert alert-info text-center fw-bold">
+        ⏳ Time Left: {time}s
+    </div>
   )
 }
-
-export default Timer
