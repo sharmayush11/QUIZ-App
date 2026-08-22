@@ -1,10 +1,25 @@
-import React from 'react'
+import {useState, useEffect} from 'react'
 
-function LeaderBoard() {
+export default function LeaderBoard() {
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        const stored = JSON.parse(localStorage.getItem("leaderboard")) || [];
+        setData(stored)
+    }, [])
+
+    const clearBoard = () => {
+        localStorage.removeItem("leaderboard");
+        setData([])
+    }
+
   return (
     <div className="container text-center py-5">
         <h2 className="fw-bold mb-4">🏆 Leaderboard</h2>
-        <table className="table table-striped shadow">
+        {data.length === 0 ? (
+            <p className='text-muted'>No Scores yet! Play the quiz.</p>
+        ) : (
+            <table className="table table-striped shadow">
             <thead className="table-dark">
                 <tr>
                     <th>#</th>
@@ -15,25 +30,26 @@ function LeaderBoard() {
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>YahuBaba</td>
-                    <td>1</td>
-                    <td>100%</td>
-                    <td>01/01/2026, 00:00:00</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Sanchit</td>
-                    <td>1</td>
-                    <td>50%</td>
-                    <td>01/01/2026, 00:00:00</td>
-                </tr>
+                {data.map((entry,index) => (
+                    <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{entry.name}</td>
+                        <td>{entry.score}</td>
+                        <td>{entry.percentage}%</td>
+                        <td>{entry.date}</td>
+                    </tr>
+                ))}
+                
             </tbody>
         </table>
-        <button className="btn btn-danger mt-3">Clear Leaderboard</button>
-    </div>
+        
+        )}
+        <button 
+            className="btn btn-danger mt-3"
+            onClick={clearBoard}
+        >Clear Leaderboard
+        </button>
+        </div>
+    
   )
 }
-
-export default LeaderBoard
