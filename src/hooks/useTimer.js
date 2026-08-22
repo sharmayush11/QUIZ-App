@@ -1,13 +1,19 @@
-import {useState, useEffect} from 'react'
+import { useCallback, useEffect, useState } from "react";
 
 export default function useTimer(seconds) {
-    const [time, setTime] = useState(seconds)
+  const [time, setTime] = useState(seconds);
 
-    useEffect(() => {
-        if(time === 0) return;
-        const interval = setInterval(() => setTime(prev => prev - 1), 1000)
-        return () => clearInterval(interval)
-    }, [time])
+  useEffect(() => {
+    if (time <= 0) return undefined;
 
-  return { time, reset: () => setTime(seconds) }
+    const interval = setInterval(() => {
+      setTime((previous) => Math.max(previous - 1, 0));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [time]);
+
+  const reset = useCallback(() => setTime(seconds), [seconds]);
+
+  return { time, reset };
 }

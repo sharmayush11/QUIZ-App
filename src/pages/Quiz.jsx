@@ -1,50 +1,61 @@
-import { useEffect, useContext } from 'react'
-import {QuizContext} from "../context/QuizContext"
-import { useNavigate } from 'react-router-dom'
-import Timer from './../components/Timer';
-import ProgressBar from './../components/ProgressBar';
-import QuestionCard from './../components/QuestionCard';
-import useTimer from '../hooks/useTimer';
+import { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { QuizContext } from "../context/QuizContext";
+import ProgressBar from "../components/ProgressBar";
+import QuestionCard from "../components/QuestionCard";
+import Timer from "../components/Timer";
+import useTimer from "../hooks/useTimer";
 
 export default function Quiz() {
-  const {state, dispatch} = useContext(QuizContext)
-  const {index, questions } = state;
+  const { state, dispatch } = useContext(QuizContext);
+  const { index, questions } = state;
   const navigate = useNavigate();
-  const {time, reset} = useTimer(15)
+  const { time, reset } = useTimer(15);
 
   useEffect(() => {
-    if(time === 0){
-      dispatch({type: "ANWSER", payload: false})
-      reset()
+    if (time === 0) {
+      dispatch({ type: "ANSWER", payload: false });
+      reset();
     }
-  }, [time])
+  }, [time, dispatch, reset]);
 
-  if(!questions || questions.length === 0){
-    return <h2 className='text-center mt-5'>Loading Questions...</h2>
-  }
+  useEffect(() => {
+    if (index >= questions.length) {
+      dispatch({ type: "FINISH" });
+      navigate("/result", { replace: true });
+    }
+  }, [index, questions.length, dispatch, navigate]);
 
-  if(index >= questions.length){
-    dispatch({type: "FINISH"})
-    navigate("/result")
-    return null;
-  }
+  if (!questions?.length || index >= questions.length) return null;
 
-  const current = questions[index]
+  const currentQuestion = questions[index];
 
-  const handleSelect = (option) =>{
-    dispatch({type: "ANWSER", payload: option === current.answer})
+  const handleSelect = (option) => {
+    dispatch({ type: "ANSWER", payload: option === currentQuestion.answer });
     reset();
-  }
+  };
 
   return (
-    <div className="container mt-4">
-        <Timer time={time} />
+    <main className="quiz-page">
+      <div className="container quiz-container">
+        <div className="quiz-topbar">
+          <div>
+            <p className="eyebrow mb-2"><span /> Live challenge</p>
+            <h1>React Fundamentals</h1>
+          </div>
+          <Timer time={time} />
+        </div>
+
         <ProgressBar current={index} total={questions.length} />
+
         <QuestionCard
-            question={current.question}
-            options={current.options}
-            onSelect={handleSelect}
+          question={currentQuestion.question}
+          options={currentQuestion.options}
+          onSelect={handleSelect}
         />
-    </div>
-  )
+
+        <p className="quiz-tip">Tip: choose the answer you think is correct. There is no penalty for a wrong answer.</p>
+      </div>
+    </main>
+  );
 }

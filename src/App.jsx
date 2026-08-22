@@ -1,27 +1,31 @@
-import { BrowserRouter , Routes , Route } from 'react-router-dom'
-import { Suspense , lazy } from 'react'
-import QuizProvider from './context/QuizContext'
-import Home from './pages/Home'
-import Quiz from './pages/Quiz'
-import LeaderBoard from './pages/LeaderBoard'
-const Result = lazy(() => import ('./pages/Result'))
+import { lazy, Suspense } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import QuizProvider from "./context/QuizContext";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Quiz from "./pages/Quiz";
+import LeaderBoard from "./pages/LeaderBoard";
+
+const Result = lazy(() => import("./pages/Result"));
+
 function App() {
   return (
-    <>
-      <QuizProvider>
-        <BrowserRouter>
-          <Suspense fallback={<h2 className="text-center mt-5">Loading...</h2>}>
+    <QuizProvider>
+      <BrowserRouter>
+        <div className="app-shell">
+          <Navbar />
+          <Suspense fallback={<div className="page-loader"><span className="loader" /> Loading...</div>}>
             <Routes>
-              <Route path="/" element={<Home/>} />
-              <Route path="/quiz" element={<Quiz/>} />
-              <Route path="/result" element={<Result/>} />
-              <Route path="/leaderboard" element={<LeaderBoard/>} />
+              <Route path="/" element={<Home />} />
+              <Route path="/quiz" element={<Quiz />} />
+              <Route path="/result" element={<Result />} />
+              <Route path="/leaderboard" element={<LeaderBoard />} />
             </Routes>
           </Suspense>
-        </BrowserRouter>
-      </QuizProvider>
-    </>
-  )
+        </div>
+      </BrowserRouter>
+    </QuizProvider>
+  );
 }
 
-export default App
+export default App;

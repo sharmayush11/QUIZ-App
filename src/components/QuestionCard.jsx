@@ -1,21 +1,22 @@
-export default function QuestionCard({question, options, onSelect}) {
+export default function QuestionCard({ question, options, onSelect }) {
   return (
-    <div className="card shadow p-4">
-        <h4 className="fw-semibold">{question}</h4>
-        <div className="mt-3">
-          {options.map((opt, i) => (
-            <button 
-              className="btn btn-outline-primary w-100 mt-2"
-              key={i}
-              onClick={() => onSelect(opt)}
-            >
-              {opt}
-            </button>
-          ))}
-            
+    <section className="question-card">
+      <div className="question-badge">Choose the best answer</div>
+      <h2>{question}</h2>
 
-            
-        </div>
-    </div>
-  )
+      <div className="options-grid">
+        {options.map((option, index) => (
+          <button
+            className="option-button"
+            key={option}
+            onClick={() => onSelect(option)}
+          >
+            <span className="option-letter">{String.fromCharCode(65 + index)}</span>
+            <span>{option}</span>
+            <span className="option-arrow">→</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
 }

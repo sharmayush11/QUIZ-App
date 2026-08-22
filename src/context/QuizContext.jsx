@@ -1,51 +1,53 @@
 import { createContext, useReducer } from "react";
-import questions from "../data/questions"
+import questions from "../data/questions";
 
-export const QuizContext = createContext();
+export const QuizContext = createContext(null);
+
+const createSessionId = () =>
+    globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
 
 const initialState = {
-    username : "",
-    index:0,
-    score:0,
+    username: "",
+    index: 0,
+    score: 0,
     completed: false,
-    questions
-}
+    questions,
+    sessionId: createSessionId(),
+};
 
-function quizReducer(state, action){
-    switch(action.type){
+function quizReducer(state, action) {
+    switch (action.type) {
         case "SET_NAME":
-            return {
-                ...state,
-                username: action.payload
-            }
-        case "ANWSER":
+            return { ...state, username: action.payload.trim() };
+
+        case "ANSWER":
             return {
                 ...state,
                 score: action.payload ? state.score + 1 : state.score,
-                index: state.index + 1
-            }
+                index: state.index + 1,
+            };
+
         case "FINISH":
-            return {
-                ...state,
-                completed: true
-            }
-        case "RESET" :
+            return { ...state, completed: true };
+
+        case "RESET":
             return {
                 ...initialState,
-                questions: state.questions
-            }        
+                questions: state.questions,
+                sessionId: createSessionId(),
+            };
+
         default:
-             return state;   
+            return state;
     }
 }
 
-export default function QuizProvider({ children }){
-
-    const [state, dispatch] = useReducer(quizReducer, initialState)
+export default function QuizProvider({ children }) {
+    const [state, dispatch] = useReducer(quizReducer, initialState);
 
     return (
-        <QuizContext.Provider value={{state, dispatch}}>
+        <QuizContext.Provider value={{ state, dispatch }}>
             {children}
         </QuizContext.Provider>
-    )
+    );
 }

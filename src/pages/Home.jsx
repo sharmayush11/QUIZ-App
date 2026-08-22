@@ -1,31 +1,82 @@
-import { useState, useContext } from 'react'
-import {QuizContext} from "../context/QuizContext"
-import { useNavigate } from 'react-router-dom'
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { QuizContext } from "../context/QuizContext";
 
 export default function Home() {
-  const [name, setName] = useState("")
-  const { dispatch } = useContext(QuizContext)
-  const navigate = useNavigate()
+  const [name, setName] = useState("");
+  const [error, setError] = useState("");
+  const { state, dispatch } = useContext(QuizContext);
+  const navigate = useNavigate();
 
   const startQuiz = () => {
-    if(!name.trim()) return alert("Please enter your name.")
-      dispatch({type: "SET_NAME", payload: name })
-      navigate("/quiz")
-  }
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      setError("Please enter your name to continue.");
+      return;
+    }
+
+    if (trimmedName.length > 30) {
+      setError("Name must be 30 characters or less.");
+      return;
+    }
+
+    if (state.index !== 0 || state.score !== 0 || state.completed) {
+      dispatch({ type: "RESET" });
+    }
+
+    dispatch({ type: "SET_NAME", payload: trimmedName });
+    navigate("/quiz");
+  };
 
   return (
-    <div className="container text-center mt-5">
-        <h1 className="fw-bold mb-4">🚀 React Quiz Challenge</h1>
-        <input 
-          placeholder="Enter your name" 
-          className="form-control w-50 mx-auto mb-3" 
-          type="text" 
-          autoComplete="off"
-          onChange={(e) => setName(e.target.value)}
-        />
-        <button 
-        onClick={startQuiz}
-        className="btn btn-primary btn-lg">Start Quiz</button>
-    </div>
-  )
+    <main className="home-page">
+      <div className="container">
+        <div className="hero-grid">
+          <section className="hero-copy">
+            <div className="eyebrow"><span /> React knowledge challenge</div>
+            <h1>Test your React skills. <span>Level up.</span></h1>
+            <p>
+              A fast, focused quiz to test your React fundamentals. Answer before the timer runs out and climb the leaderboard.
+            </p>
+
+            <div className="hero-stats">
+              <div><strong>{state.questions.length}</strong><span>Questions</span></div>
+              <div><strong>15s</strong><span>Per question</span></div>
+              <div><strong>∞</strong><span>Attempts</span></div>
+            </div>
+          </section>
+
+          <section className="start-card">
+            <div className="start-icon">⚡</div>
+            <p className="card-kicker">Ready when you are</p>
+            <h2>Start the challenge</h2>
+            <p className="card-subtitle">Enter your name and see how well you know React.</p>
+
+            <label htmlFor="player-name" className="form-label">Your name</label>
+            <input
+              id="player-name"
+              value={name}
+              onChange={(event) => {
+                setName(event.target.value);
+                setError("");
+              }}
+              onKeyDown={(event) => event.key === "Enter" && startQuiz()}
+              placeholder="e.g. Ayush Sharma"
+              className={`name-input ${error ? "input-error" : ""}`}
+              autoComplete="name"
+              maxLength={30}
+            />
+            {error && <div className="validation-message">{error}</div>}
+
+            <button className="primary-button w-100 mt-3" onClick={startQuiz}>
+              Start Quiz <span>→</span>
+            </button>
+
+            <div className="secure-note">No account required · Scores stay on this device</div>
+          </section>
+        </div>
+      </div>
+    </main>
+  );
 }
